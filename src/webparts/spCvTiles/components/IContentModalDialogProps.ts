@@ -1,4 +1,4 @@
-import { IContentTile } from '../SpStoryTilesV2WebPart';
+import { IContentTile } from '../SpCvTilesWebPart';
 
 export interface IContentModalDialogProps {
   isOpen: boolean;
