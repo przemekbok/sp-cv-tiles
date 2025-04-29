@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './ContentTile.module.scss';
 import { IContentTileGalleryProps } from './IContentTileGalleryProps';
-import { IContentTile } from '../SpStoryTilesV2WebPart';
+import { IContentTile } from '../SpCvTilesWebPart';
 import ContentTile from './ContentTile';
 import ContentModalDialog from './ContentModalDialog';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
