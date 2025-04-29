@@ -1,5 +1,5 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { IContentTile } from '../SpStoryTilesV2WebPart';
+import { IContentTile } from '../SpCvTilesWebPart';
 
 export interface IContentTileGalleryProps {
   isDarkTheme: boolean;

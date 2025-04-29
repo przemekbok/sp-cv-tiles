@@ -51,7 +51,7 @@
   
   .tileContainer {
     flex: 0 0 auto;
-    margin: 0 0;
+    margin: 0 10px;
     /* Adjust width to prevent overflow */
     max-width: calc(50% - 20px); /* For 2 tiles layout */
   }
@@ -71,9 +71,9 @@
   max-width: 100%; /* Ensure responsiveness */
   display: flex;
   flex-direction: column;
-  text-align: center;
+  text-align: left;
   border-radius: 8px;
-  box-shadow: 0 3px 3px -2px hsla(0,0%,59%,.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -82,7 +82,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  height: 320px;
+  height: auto;
+  min-height: 200px;
 
   &:hover {
     transform: translateY(-5px);
@@ -90,31 +91,23 @@
   }
 }
 
-.imageContainer {
-  height: 180px;
-  width: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
 .contentContainer {
-  padding: 12px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: left;
-  justify-content: space-between;
-  width: calc(100% - 24px);
+  justify-content: flex-start;
+  width: calc(100% - 40px);
   min-width: 0;
   overflow: hidden;
   flex: 1;
 }
 
 .title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   margin-top: 0;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   color: #333;
   text-align: left;
   overflow: hidden;
@@ -128,7 +121,7 @@
 .description {
   font-size: 14px;
   color: #666;
-  margin: 0 0 8px 0;
+  margin: 0 0 16px 0;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -139,10 +132,14 @@
   flex: 1;
 }
 
-.arrowIcon {
+.readMoreLink {
   font-size: 14px;
-  margin: 5px 10px 5px 0;
-  text-align: right;
+  color: "[theme:link, default:#03787c]";
+  color: var(--link);
+  text-align: left;
+  margin-top: auto;
+  cursor: pointer;
+  font-weight: 500;
 }
 
 .navigationControls {

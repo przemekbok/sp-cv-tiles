@@ -16,7 +16,6 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import "@pnp/sp/fields";
 import "@pnp/sp/attachments";
-import { IAttachmentInfo } from "@pnp/sp/attachments";
 import { IDropdownOption } from '@fluentui/react/lib/Dropdown';
 
 import * as strings from 'SpCvTilesWebPartStrings';
@@ -29,7 +28,6 @@ export interface IContentTileWebPartProps {
   listName: string;
   itemsPerPage: number;
   descriptionFieldName: string;
-  imageFieldName: string;
   linkUrlFieldName: string;
 }
 
@@ -85,7 +83,7 @@ export default class SpCvTilesWebPart extends BaseClientSideWebPart<IContentTile
         userDisplayName: this.context.pageContext.user.displayName,
         contentItems: this._contentItems,
         isLoading: this._isLoading,
-        itemsPerPage: this.properties.itemsPerPage || 4,
+        itemsPerPage: this.properties.itemsPerPage || 3, // Default to 3 tiles
         context: this.context
       }
     );
@@ -132,72 +130,21 @@ export default class SpCvTilesWebPart extends BaseClientSideWebPart<IContentTile
     try {
       // Set field names - with defaults if not provided
       const descFieldName = this.properties.descriptionFieldName || 'Description';
-      const imageFieldName = this.properties.imageFieldName || 'Image';
       const linkFieldName = this.properties.linkUrlFieldName || 'LinkURL';
 
-      // Get list fields to understand the structure
-      const fields = await this._sp.web.lists.getByTitle(this.properties.listName).fields();
-      
-      // Find the Image field to get its internal name
-      const imageField = fields.find(field => 
-        field.Title === imageFieldName && 
-        (field.TypeAsString === 'Image' || field.TypeAsString === 'Thumbnail')
-      );
-      
-      let imageFieldInternalName = '';
-      if (imageField) {
-        imageFieldInternalName = imageField.InternalName;
-        console.log('Found image field internal name:', imageFieldInternalName);
-      } else {
-        console.warn(`Could not find image field with title '${imageFieldName}'`);
-        // Try a common pattern for internal names
-        imageFieldInternalName = imageFieldName.replace(/ /g, '_x0020_');
-      }
-
-      // Try multiple approaches to get the image data
+      // Get items from the selected list
       const items = await this._sp.web.lists.getByTitle(this.properties.listName).items();
 
-
       // Process items
-      const processedItems: IContentTile[] = await Promise.all(
-        items.map(async (item: any) => {
-          let imageUrl = '';
-          
-          const a = this._sp.web.lists.getByTitle(this.properties.listName)
-            .items
-            .getById(item.ID);
-          
-          const itemAttachments: IAttachmentInfo[] = await a.attachmentFiles();
-          
-          try {
-            const imageName = JSON.parse(item[imageFieldName]).fileName;
-            const imageAttachment = itemAttachments.filter(attachemnt => attachemnt.FileName === imageName)[0];
-            
-            imageUrl = imageAttachment.ServerRelativeUrl;
-          } catch (error) {
-            console.warn(`Getting item image url failed ${item.ID}:`, error);
-          }
-          
-          // Convert relative URLs to absolute URLs
-          if (imageUrl && imageUrl.startsWith('/')) {
-            const tenantUrl = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,'');
-            imageUrl = `${tenantUrl}${imageUrl}`;
-          }
-          
-          // Use default image if no image was found
-          if (!imageUrl) {
-            imageUrl = require('./assets/welcome-light.png');
-          }
-          
-          return {
-            id: item.ID,
-            title: item.Title || 'Untitled',
-            description: item[descFieldName] || '',
-            imageUrl: imageUrl,
-            linkUrl: item[linkFieldName] || ''
-          };
-        })
-      );
+      const processedItems: IContentTile[] = items.map((item: any) => {
+        return {
+          id: item.ID,
+          title: item.Title || 'Untitled',
+          description: item[descFieldName] || '',
+          imageUrl: '', // No image required for new design
+          linkUrl: item[linkFieldName] || ''
+        };
+      });
       
       this._contentItems = processedItems;
     } catch (error) {
@@ -284,15 +231,11 @@ export default class SpCvTilesWebPart extends BaseClientSideWebPart<IContentTile
                     { key: 3, text: '3' },
                     { key: 4, text: '4' }
                   ],
-                  selectedKey: this.properties.itemsPerPage || 4
+                  selectedKey: this.properties.itemsPerPage || 3
                 }),
                 PropertyPaneTextField('descriptionFieldName', {
                   label: 'Description Field Name',
                   description: 'Default: Description'
-                }),
-                PropertyPaneTextField('imageFieldName', {
-                  label: 'Image Field Name',
-                  description: 'Default: Image'
                 }),
                 PropertyPaneTextField('linkUrlFieldName', {
                   label: 'Link URL Field Name',
